@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 public class TokenController {
@@ -54,11 +55,17 @@ public class TokenController {
         var now = Instant.now();
         var expiresIn = 300L; // 5 minutes
 
+        var scopes = user.getRoles()
+                .stream()
+                .map(Role::getName)
+                .collect(Collectors.joining(" "));
+
         var claims = JwtClaimsSet.builder()
                 .issuer("simple-twitter")
                 .subject(user.getName())
                 .expiresAt(now.plusSeconds(expiresIn))
                 .issuedAt(now)
+                .claim("scope", scopes)
                 .build();
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
