@@ -61,7 +61,7 @@ public class AuthController {
 
         var claims = JwtClaimsSet.builder()
                 .issuer("simple-twitter")
-                .subject(user.getName())
+                .subject(user.getId().toString())
                 .expiresAt(now.plusSeconds(expiresIn))
                 .issuedAt(now)
                 .claim("scope", scopes)
