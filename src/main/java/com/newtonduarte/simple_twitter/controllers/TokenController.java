@@ -7,7 +7,6 @@ import com.newtonduarte.simple_twitter.entities.dto.LoginRequest;
 import com.newtonduarte.simple_twitter.entities.dto.LoginResponse;
 import com.newtonduarte.simple_twitter.repositories.RoleRepository;
 import com.newtonduarte.simple_twitter.repositories.UserRepository;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,13 +30,13 @@ public class TokenController {
     private final JwtEncoder jwtEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public TokenController(JwtEncoder jwtEncoder, UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.jwtEncoder = jwtEncoder;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.passwordEncoder = bCryptPasswordEncoder;
     }
 
     @PostMapping(path = "/sign-in")
@@ -46,7 +45,7 @@ public class TokenController {
                 .findByName(loginRequest.name())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
-        boolean passwordMatches = bCryptPasswordEncoder.matches(loginRequest.password(), user.getPassword());
+        boolean passwordMatches = passwordEncoder.matches(loginRequest.password(), user.getPassword());
 
         if (!passwordMatches) {
             throw new BadCredentialsException("Invalid credentials");
@@ -86,7 +85,7 @@ public class TokenController {
 
         var user = new User();
         user.setName(createUserDto.name());
-        user.setPassword(bCryptPasswordEncoder.encode(createUserDto.password()));
+        user.setPassword(passwordEncoder.encode(createUserDto.password()));
         user.setRoles(Set.of(userRole.get()));
 
         userRepository.save(user);
