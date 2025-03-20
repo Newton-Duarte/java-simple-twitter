@@ -3,8 +3,12 @@ package com.newtonduarte.simple_twitter.controllers;
 import com.newtonduarte.simple_twitter.entities.Role;
 import com.newtonduarte.simple_twitter.entities.Tweet;
 import com.newtonduarte.simple_twitter.entities.dto.CreateTweetDto;
+import com.newtonduarte.simple_twitter.entities.dto.FeedDto;
+import com.newtonduarte.simple_twitter.entities.dto.FeedItemDto;
 import com.newtonduarte.simple_twitter.repositories.TweetRepository;
 import com.newtonduarte.simple_twitter.repositories.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,24 @@ public class TweetController {
     public TweetController(TweetRepository tweetRepository, UserRepository userRepository) {
         this.tweetRepository = tweetRepository;
         this.userRepository = userRepository;
+    }
+
+    @GetMapping(path = "/feed")
+    public ResponseEntity<FeedDto> getTweetFeed(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize
+    ) {
+        var tweets = tweetRepository.findAll(
+                PageRequest.of(page, pageSize, Sort.Direction.DESC, "created_at")
+        ).map(tweet -> new FeedItemDto(
+                tweet.getId(),
+                tweet.getContent(),
+                tweet.getUser().getName()
+        ));
+
+        return ResponseEntity.ok(new FeedDto(
+                tweets.getContent(), page, pageSize, tweets.getTotalPages(), tweets.getTotalElements()
+        ));
     }
 
     @PostMapping
