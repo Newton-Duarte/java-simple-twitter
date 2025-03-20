@@ -25,14 +25,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-public class TokenController {
+public class AuthController {
 
     private final JwtEncoder jwtEncoder;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public TokenController(JwtEncoder jwtEncoder, UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public AuthController(JwtEncoder jwtEncoder, UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.jwtEncoder = jwtEncoder;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
