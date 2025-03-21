@@ -34,7 +34,7 @@ public class TweetController {
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize
     ) {
         var tweets = tweetRepository.findAll(
-                PageRequest.of(page, pageSize, Sort.Direction.DESC, "created_at")
+                PageRequest.of(page, pageSize, Sort.Direction.DESC, "createdAt")
         ).map(tweet -> new FeedItemDto(
                 tweet.getId(),
                 tweet.getContent(),
