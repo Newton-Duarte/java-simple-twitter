@@ -1,5 +1,6 @@
 package com.newtonduarte.simple_twitter.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -15,6 +16,7 @@ public class User {
     @Column(unique = true)
     private String name;
 
+    @JsonIgnore
     private String password;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
